@@ -81,7 +81,7 @@ addLayer("r", {
     row: 1,                                 // The row this layer is on (0 is the first row).
   
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
-    baseAmount() { return player['p'].points },  // A function to return the current amount of baseResource.
+    baseAmount() { return player.p.points },  // A function to return the current amount of baseResource.
 
     requires: new Decimal(40),              // The amount of the base needed to  gain 1 of the prestige currency.
                                             // Also the amount required to unlock the layer.
@@ -114,4 +114,16 @@ addLayer("r", {
             cost: new Decimal(2),
         }
     },
+    milestones: {
+        0: {
+            requirementDescription: "3 Rebirth Points",
+            effectDescription: "Keep prestige upgrades on reset",
+            done() { return player.r.points.gte(3) }
+        },
+        1: {
+            requirementDescription: "8 Rebirth Points",
+            effectDescription: "Gain 10% of prestige points on reset per second",
+            done() { return player.r.points.gte(8) }
+        }
+    }
 })
