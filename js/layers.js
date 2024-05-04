@@ -17,6 +17,8 @@ addLayer("p", {
         let mult = new Decimal(1)
         if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
         if (hasUpgrade('p', 22)) mult = mult.times(1.5)
+        if (hasUpgrade('r', 11)) mult = mult.times(upgradeEffect('r', 11))   
+        if (hasUpgrade('r', 12)) mult = mult.times(1.25)     
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -74,10 +76,10 @@ addLayer("r", {
         points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
     }},
 
-    color: "#314159",                       // The color for this layer, which affects many elements.
+    color: "#007cb0",                       // The color for this layer, which affects many elements.
     resource: "rebirth points",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
-
+  
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player['p'].points },  // A function to return the current amount of baseResource.
 
@@ -97,6 +99,19 @@ addLayer("r", {
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
 
     upgrades: {
-        // Look in the upgrades docs to see what goes here!
+        11: {
+            title: "Gotta make this work somehow",
+            description: "Rebirth points boost prestige points",
+            cost: new Decimal(1),
+            effect() {
+                return player[this.layer].points.add(1).pow(0.25)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+        },
+        12: {
+            title: "Twin Booster",
+            description: "Multiply point and prestige point gain by 1.25",
+            cost: new Decimal(2),
+        }
     },
 })
