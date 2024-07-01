@@ -1,3 +1,36 @@
+addLayer("a", {
+    name: "achievement",
+    symbol: "A",
+    startData() { return {
+        unlocked: true,
+        points: new Decimal(0),
+    }},
+    color: "#FFB200",
+    resource: "Achievements",
+    row: "side",
+
+    achievements: {
+        11: {
+            name: "Starting",
+            tooltip: "Get 1 Prestige Point",
+            done() { return player.p.points.gte(1) },
+        },
+        12: {
+            name: "Big Jump",
+            tooltip: "Buy Inverse Booster",
+        },
+        13: {
+            name: "Handful",
+            tooltip: "Buy AAA Batteries",
+        },
+        14: {
+            name: "Layer #2",
+            tooltip: "Get 1 Rebirth Point. Reward: Double Point Gain",
+            done() { return player.r.points.gte(1) },
+        }
+    }
+})
+
 addLayer("p", {
     name: "prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
