@@ -149,16 +149,4 @@ addLayer("r", {
             cost: new Decimal(2),
         }
     },
-    milestones: {
-        0: {
-            requirementDescription: "3 Rebirth Points",
-            effectDescription: "Keep prestige upgrades on reset",
-            done() { return player.r.points.gte(3) }
-        },
-        1: {
-            requirementDescription: "8 Rebirth Points",
-            effectDescription: "Gain 10% of prestige points on reset per second",
-            done() { return player.r.points.gte(8) }
-        }
-    }
 })
