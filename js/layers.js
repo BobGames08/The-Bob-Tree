@@ -18,10 +18,12 @@ addLayer("a", {
         12: {
             name: "Big Jump",
             tooltip: "Buy Inverse Booster",
+            done() { return hasUpgrade('p', 13)},
         },
         13: {
             name: "Handful",
             tooltip: "Buy AAA Batteries",
+            done() { return hasUpgrade('p', 22)}, 
         },
         14: {
             name: "Layer #2",
@@ -129,7 +131,7 @@ addLayer("r", {
         return new Decimal(1)
     },
 
-    layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return hasAchievement('a', 13) },          // Returns a bool for if this layer's node should be visible in the tree.
 
     upgrades: {
         11: {
