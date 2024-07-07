@@ -44,6 +44,16 @@ addLayer("a", {
             name: "Not Stonks",
             tooltip: "Buy Acutal Dilemma",
             done() {return hasUpgrade('p', 24)}
+        },
+        22: {
+            name: "Prolouge",
+            tooltip: "Complete Introduction",
+            done() {return hasChallenge('c', 11)}
+        },
+        23: {
+            name: "Programming",
+            tooltip: "Complete Initialize",
+            done() {return hasChallenge('c', 12)}
         }
     }
 })
@@ -72,6 +82,7 @@ addLayer("p", {
         if (hasAchievement('a', 15)) mult = mult.times(1.1)
         if (hasUpgrade('p', 23)) mult = mult.times(upgradeEffect('p', 23))
         if (hasUpgrade('p', 24)) mult = mult.times(0.8)
+        if (inChallenge('c', 12)) mult = mult.pow(0.5)    
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -221,7 +232,7 @@ addLayer("c", {
     }},
 
     color: "#9B2321",                       // The color for this layer, which affects many elements.
-    resource: "challenges",            // The name of this layer's main prestige resource.
+    resource: "challenge point",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
 
     baseResource: "points",                 // The name of the resource your prestige gain is based on.
@@ -242,12 +253,44 @@ addLayer("c", {
 
     layerShown() { return hasAchievement('a', 21) },          // Returns a bool for if this layer's node should be visible in the tree.
     
+    milestones: {
+        0: {
+            requirementDescription: "1 Challenge Point",
+            effectDescription: "Unlock the first Challenge",
+            done() { return player.c.points.gte(1) }
+        },
+        1: {
+            requirementDescription: "3 Challenge Point",
+            effectDescription: "Unlock the second Challenge",
+            done() { return player.c.points.gte(3) }
+        },
+        2: {
+            requirementDescription: "5 Challenge Point",
+            effectDescription: "Unlock the third Challenge",
+            done() { return player.c.points.gte(5) }
+        }
+    },
+
     challenges: {
         11: {
             name: "Introduction",
             challengeDescription: "Point gain is divided based on points",
             canComplete: function() {return player.points.gte(100)},
-            goal: Decimal(100),
+            unlocked() {
+                return hasMilestone('c', 0)
+            },
+            rewardDescription: "Unlock 2 more Prestige Upgrades",
+            goalDescription: "100 Points"
+        },
+        12: {
+            name: "Initialize",
+            challengeDescription: "Square root Point & Prestige Point Gain",
+            canComplete: function() {return player.points.gte(100)},
+            unlocked() {
+                return hasMilestone('c', 1)
+            },
+            rewardDescription: "Unlock 2 more Rebirth Upgrades",
+            goalDescription: "100 Points"
         },
     }
 })
