@@ -120,7 +120,10 @@ addLayer("r", {
     color: "#007cb0",                       // The color for this layer, which affects many elements.
     resource: "rebirth points",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
-  
+    hotkeys: [
+        {key: "r", description: "R: Reset for rebirth points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.p.points },  // A function to return the current amount of baseResource.
 
