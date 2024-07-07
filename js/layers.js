@@ -29,6 +29,11 @@ addLayer("a", {
             name: "Layer #2",
             tooltip: "Get 1 Rebirth Point. Reward: Double Point Gain",
             done() { return player.r.points.gte(1) },
+        },
+        15: {
+            name: "Dilemma?",
+            tooltip: "Buy the Direct Hit. Reward: 10% more Prestige Points",
+            done() { return hasUpgrade('r',13)},
         }
     }
 })
@@ -54,6 +59,7 @@ addLayer("p", {
         if (hasUpgrade('p', 22)) mult = mult.times(1.5)
         if (hasUpgrade('r', 11)) mult = mult.times(upgradeEffect('r', 11))   
         if (hasUpgrade('r', 12)) mult = mult.times(1.25)     
+        if (hasAchievement('a', 15)) mult = mult.times(1.1)    
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -147,6 +153,15 @@ addLayer("r", {
             title: "Twin Booster",
             description: "Multiply point and prestige point gain by 1.25",
             cost: new Decimal(2),
+        },
+        13: {
+            title: "Direct Hit",
+            description: "Rebirth points boosts point gain",
+            cost: new Decimal(3),
+            effect() {
+                return player[this.layer].points.add(1).pow(0.5)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
         }
     },
 })
