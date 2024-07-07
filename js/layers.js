@@ -93,6 +93,12 @@ addLayer("p", {
                 return player.points.add(1).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+        14: {
+            title: "Anything?",
+            description: "Double point gain again",
+            cost: new Decimal(50),
+            
+            },    
         },
         21: {
             title: "Fractal Engine",
