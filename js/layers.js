@@ -159,9 +159,14 @@ addLayer("r", {
             description: "Rebirth points boosts point gain",
             cost: new Decimal(3),
             effect() {
-                return player[this.layer].points.add(1).pow(0.5)
+                return player[this.layer].points.add(1).pow(0.6)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+        },
+        21: {
+            title: "Opening",
+            description: "Unlock 3 More Prestige Upgrades",
+            cost: new Decimal(5),
         }
     },
 })
