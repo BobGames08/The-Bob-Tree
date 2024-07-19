@@ -7,6 +7,7 @@ addLayer("a", {
     }},
     color: "#FFB200",
     resource: "Achievements",
+    type: "none",
     row: "side",
 
     achievements: {
@@ -157,6 +158,26 @@ addLayer("p", {
             cost: new Decimal(1500),
             unlocked() {
                 return hasUpgrade('r', 21)
+            }
+        },
+        31: {
+            title: "Upcycling",
+            description: "2.5x more points",
+            cost: new Decimal(100000),
+            unlocked() {
+                return hasChallenge('c', 11)
+            }
+        },
+        32: {
+            title: "Weak Booster",
+            description: "Prestige points boost point gain again",
+            cost: new Decimal(200000),
+            effect() {
+                return player[this.layer].points.add(1).pow(0.1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasChallenge('c', 11)
             }
         }
     },
