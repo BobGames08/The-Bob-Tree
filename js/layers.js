@@ -55,6 +55,21 @@ addLayer("a", {
             name: "Programming",
             tooltip: "Complete Initialize",
             done() {return hasChallenge('c', 12)}
+        },
+        24: {
+            name: "Problem?",
+            tooltip: "Complete Interesting",
+            done() {return hasChallenge('c', 13)}
+        },
+        25: {
+            name: "A Reset In The Poetic Sense",
+            tooltip: "Buy New Game+",
+            done() {return hasUpgrade('r', 23)}
+        },
+        26: {
+            name: "But Why?",
+            tooltip: "Buy a Weak Booster. Reward: +1% Rebirth Points",
+            done() {return hasUpgrade('p', 32)}
         }
     }
 })
@@ -83,6 +98,8 @@ addLayer("p", {
         if (hasAchievement('a', 15)) mult = mult.times(1.1)
         if (hasUpgrade('p', 23)) mult = mult.times(upgradeEffect('p', 23))
         if (hasUpgrade('p', 24)) mult = mult.times(0.8)
+        if (inChallenge('c', 13)) mult = mult.times(2)
+        if (hasUpgrade('r', 23)) mult = mult.times(upgradeEffect('r', 23))    
         if (inChallenge('c', 12)) mult = mult.pow(0.5)    
         return mult
     },
@@ -206,7 +223,9 @@ addLayer("r", {
     exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
 
     gainMult() {                            // Returns your multiplier to your gain of the prestige resource.
-        return new Decimal(1)               // Factor in any bonuses multiplying gain here.
+        let mult = new Decimal(1)
+        if (hasAchievement('a', 26)) mult = mult.times(1.01)
+        return mult               // Factor in any bonuses multiplying gain here.
     },
     gainExp() {                             // Returns the exponent to your gain of the prestige resource.
         return new Decimal(1)
@@ -242,6 +261,30 @@ addLayer("r", {
             title: "Opening",
             description: "Unlock 3 More Prestige Upgrades",
             cost: new Decimal(5),
+        },
+        22: {
+            title: "Sidegrade",
+            description: "Challenge Points boost Point Gain",
+            cost: new Decimal(35),
+            effect() {
+                return player.c.points.add(1).pow(0.5)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasChallenge('c', 12)
+            }
+        },
+        23: {
+            title: "New Game+",
+            description: "Challenge Points boost Prestige Point Gain",
+            cost: new Decimal(75),
+            effect() {
+                return player.c.points.add(1).pow(0.3)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasChallenge('c', 12)
+            }
         }
     },
 })
@@ -313,5 +356,15 @@ addLayer("c", {
             rewardDescription: "Unlock 2 more Rebirth Upgrades",
             goalDescription: "100 Points"
         },
+        13: {
+            name: "Interesting",
+            challengeDescription: "Cube root Point Gain, but Double Prestige Point Gain",
+            canComplete: function() {return player.points.gte(100)},
+            unlocked() {
+                return hasMilestone('c', 2)
+            },
+            rewardDescription: "Unlock 2 more Prestige Upgrades",
+            goalDescription: "100 Points"
+        }
     }
 })
