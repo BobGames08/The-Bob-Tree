@@ -20,7 +20,9 @@ let VERSION = {
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.0</h3><br>
 		- Added things.<br>
-		- Added stuff.`
+		- Added stuff.
+		- Not Using This
+		Current End: Idea`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 

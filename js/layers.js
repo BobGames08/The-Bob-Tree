@@ -80,6 +80,16 @@ addLayer("a", {
             name: "Going Down",
             tooltip: "Get Energy. Reward: +20% Prestige Points",
             done() {return player.e.points.gte(1)}
+        },
+        33: {
+            name: "Making Progress",
+            tooltip: "Get 3 Energy",
+            done() {return player.e.points.gte(3)}
+        },
+        34: {
+            name: "EUREKA!",
+            tooltip: "Complete Idea. Reward: Unlock 3 More Energy Upgrades",
+            done() {return hasChallenge('c', 21)}
         }
     }
 })
@@ -264,6 +274,7 @@ addLayer("r", {
         if (hasAchievement('a', 26)) mult = mult.times(1.01)
         if (hasUpgrade('e', 13)) mult = mult.times(1.2)
         if (hasUpgrade('r', 32)) mult = mult.times(upgradeEffect('r', 32))
+        if (hasChallenge('c', 21)) mult = mult.times(1.5)
         return mult               // Factor in any bonuses multiplying gain here.
     },
     gainExp() {                             // Returns the exponent to your gain of the prestige resource.
@@ -432,6 +443,16 @@ addLayer("c", {
             },
             rewardDescription: "Unlock 2 more Prestige Upgrades",
             goalDescription: "100 Points"
+        },
+        21: {
+            name: "Idea",
+            challengeDescription: "Introduction and Initialize simultaneously",
+            countsAs: [11, 12],
+            canComplete: function() {return player.points.gte(100)},
+            unlocked() {
+                return hasUpgrade('r', 33)
+            },
+            rewardDescription: "50% More Rebirth Points"
         }
     }
 })
