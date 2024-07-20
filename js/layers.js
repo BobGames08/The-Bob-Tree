@@ -70,6 +70,11 @@ addLayer("a", {
             name: "But Why?",
             tooltip: "Buy a Weak Booster. Reward: +1% Rebirth Points",
             done() {return hasUpgrade('p', 32)}
+        },
+        31: {
+            name: "Decently Big Numbers",
+            tooltip: "Reach 1e10 Points",
+            done() {return player.points.gte(1e10)}
         }
     }
 })
@@ -99,7 +104,8 @@ addLayer("p", {
         if (hasUpgrade('p', 23)) mult = mult.times(upgradeEffect('p', 23))
         if (hasUpgrade('p', 24)) mult = mult.times(0.8)
         if (inChallenge('c', 13)) mult = mult.times(2)
-        if (hasUpgrade('r', 23)) mult = mult.times(upgradeEffect('r', 23))    
+        if (hasUpgrade('r', 23)) mult = mult.times(upgradeEffect('r', 23))
+        if (hasUpgrade('p', 34)) mult = mult.times(upgradeEffect('p', 34))    
         if (inChallenge('c', 12)) mult = mult.pow(0.5)    
         return mult
     },
@@ -195,6 +201,30 @@ addLayer("p", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
             unlocked() {
                 return hasChallenge('c', 11)
+            }
+        },
+        33: {
+            title: "Game Of Life",
+            description: "Points boost point gain again",
+            cost: new Decimal(350000),
+            effect() {
+                return player.points.add(1).pow(0.05)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasChallenge('c', 13)
+            }
+        },
+        34: {
+            title: "Dynamo",
+            description: "Points boost Prestige Point Gain again",
+            cost: new Decimal(750000),
+            effect() {
+                return player.points.add(1).pow(0.03)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasChallenge('c', 13)
             }
         }
     },
