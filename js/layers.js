@@ -73,12 +73,12 @@ addLayer("a", {
         },
         31: {
             name: "Decently Big Numbers",
-            tooltip: "Reach 1e10 Points",
-            done() {return player.points.gte(1e10)}
+            tooltip: "Reach 1e9 Points",
+            done() {return player.points.gte(1e9)}
         },
         32: {
             name: "Going Down",
-            tooltip: "Get Electricity. Reward: +20% Prestige Points",
+            tooltip: "Get Energy. Reward: +20% Prestige Points",
             done() {return player.e.points.gte(1)}
         }
     }
@@ -263,6 +263,7 @@ addLayer("r", {
         let mult = new Decimal(1)
         if (hasAchievement('a', 26)) mult = mult.times(1.01)
         if (hasUpgrade('e', 13)) mult = mult.times(1.2)
+        if (hasUpgrade('r', 32)) mult = mult.times(upgradeEffect('r', 32))
         return mult               // Factor in any bonuses multiplying gain here.
     },
     gainExp() {                             // Returns the exponent to your gain of the prestige resource.
@@ -322,6 +323,34 @@ addLayer("r", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
             unlocked() {
                 return hasChallenge('c', 12)
+            }
+        },
+        31: {
+            title: "Taser",
+            description: "Triple Point Gain",
+            cost: new Decimal(100),
+            unlocked() {
+                return hasUpgrade('e', 11)
+            }
+        },
+        32: {
+            title: "The Booster we've all been waiting for",
+            description: "Prestige Points boost Rebirth Point Gain",
+            cost: new Decimal(225),
+            effect() {
+                return player[this.layer].points.add(1).pow(0.005)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasUpgrade('e', 12)
+            }
+        },
+        33: {
+            title: "Intercom",
+            description: "Unlock a New Challenge",
+            cost: new Decimal(600),
+            unlocked() {
+                return hasUpgrade('e', 13)
             }
         }
     },
@@ -420,7 +449,7 @@ addLayer("e", {
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.p.points },  // A function to return the current amount of baseResource.
 
-    requires: new Decimal(1.5e9),              // The amount of the base needed to  gain 1 of the prestige currency.
+    requires: new Decimal(1e8),              // The amount of the base needed to  gain 1 of the prestige currency.
                                             // Also the amount required to unlock the layer.
 
     type: "static",                         // Determines the formula used for calculating prestige currency.
@@ -433,9 +462,8 @@ addLayer("e", {
         return new Decimal(1)
     },
 
-    layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return hasAchievement('a', 31) },          // Returns a bool for if this layer's node should be visible in the tree.
 
-    upgrades: {
         upgrades: {
             11: {
                 title: "Volt",
@@ -452,6 +480,5 @@ addLayer("e", {
                 description: "+20% Rebirth Points and Unlock a Rebirth Upgrade",
                 cost: new Decimal(3),
             }
-        }
     },
 })
