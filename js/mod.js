@@ -54,6 +54,7 @@ function getPointGen() {
 	if (inChallenge('c', 11)) gain = gain.times(1/(player.points.add(1).pow(0.5)))
 	if (hasUpgrade('r', 22)) gain = gain.times(upgradeEffect('r', 22))
 	if (hasUpgrade('p', 33)) gain = gain.times(upgradeEffect('p', 33))
+	if (hasUpgrade('e', 11)) gain = gain.times(2)
 	if (inChallenge('c', 12)) gain = gain.pow(0.5)
 	if (inChallenge('c', 13)) gain = gain.pow(1/3)	
 
