@@ -90,6 +90,11 @@ addLayer("a", {
             name: "EUREKA!",
             tooltip: "Complete Idea. Reward: Unlock 3 More Energy Upgrades",
             done() {return hasChallenge('c', 21)}
+        },
+        35: {
+            name: "At The Speed Of Light",
+            tooltip: "Buy Coulomb. Reward: +5% Rebirth Points",
+            done() {return hasUpgrade('e', 21)}
         }
     }
 })
@@ -122,6 +127,7 @@ addLayer("p", {
         if (hasUpgrade('r', 23)) mult = mult.times(upgradeEffect('r', 23))
         if (hasUpgrade('p', 34)) mult = mult.times(upgradeEffect('p', 34))
         if (hasAchievement('a', 32)) mult = mult.times(1.2)
+        if (hasUpgrade('e', 22)) mult = mult.times(upgradeEffect('e', 22))
         if (hasUpgrade('e', 12)) mult = mult.times(1.2)    
         if (inChallenge('c', 12)) mult = mult.pow(0.5)    
         return mult
@@ -275,6 +281,7 @@ addLayer("r", {
         if (hasUpgrade('e', 13)) mult = mult.times(1.2)
         if (hasUpgrade('r', 32)) mult = mult.times(upgradeEffect('r', 32))
         if (hasChallenge('c', 21)) mult = mult.times(1.5)
+        if (hasAchievement('a', 35)) mult = mult.times(1.05)
         return mult               // Factor in any bonuses multiplying gain here.
     },
     gainExp() {                             // Returns the exponent to your gain of the prestige resource.
@@ -460,7 +467,9 @@ addLayer("c", {
 addLayer("e", {
     startData() { return {                  // startData is a function that returns default data for a layer. 
         unlocked: true,                     // You can add more variables here to add them to your layer.
-        points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
+        points: new Decimal(0),
+        best: new Decimal(0),
+        total: new Decimal(0),            // "points" is the internal name for the main resource of the layer.
     }},
 
     color: "#FFD700",                       // The color for this layer, which affects many elements.
@@ -500,6 +509,39 @@ addLayer("e", {
                 title: "Watt",
                 description: "+20% Rebirth Points and Unlock a Rebirth Upgrade",
                 cost: new Decimal(3),
-            }
+            },
+            21: {
+                title: "Coulomb",
+                description: "Boost Point Gain based on Total Energy and Unlock a Challenge Upgrade",
+                cost: new Decimal(4),
+                unlocked() {
+                    return hasAchievement('a', 34)
+                },
+                effect() {
+                    return player[this.layer].total.add(1).pow(0.5)
+                },
+                effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            },
+            22: {
+                title: "Franklin",
+                description: "Boost Prestige Point Gain based on Best Energy and Unlock a Challenge Upgrade",
+                cost: new Decimal(5),
+                unlocked() {
+                    return hasAchievement('a', 34)
+                },
+                effect() {
+                    return player[this.layer].best.add(1).pow(1/3)
+                },
+                effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            },
+            23: {
+                title: "Biot",
+                description: "... and Unlock a Challenge Upgrade",
+                cost: new Decimal(6),
+                unlocked() {
+                    return hasAchievement('a', 34)
+                },
+            },
+            
     },
 })
