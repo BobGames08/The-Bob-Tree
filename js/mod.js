@@ -59,8 +59,16 @@ function getPointGen() {
 	if (hasUpgrade('e', 11)) gain = gain.times(2)
 	if (hasUpgrade('r', 31)) gain = gain.times(3)
 	if (hasUpgrade('e', 21)) gain = gain.times(upgradeEffect('e', 21))
+	if (hasUpgrade('e', 23)) gain = gain.times(3)
 	if (inChallenge('c', 12)) gain = gain.pow(0.5)
 	if (inChallenge('c', 13)) gain = gain.pow(1/3)	
+
+	let softcapStart = new Decimal(1e9); // Point at which gain starts slowing down
+    let softcapPower = new Decimal(0.5); // The lower the power, the harsher the softcap
+
+    if (gain.gte(softcapStart)) {
+        gain = softcap(gain, softcapStart, softcapPower);
+    }
 
 	return gain
 }

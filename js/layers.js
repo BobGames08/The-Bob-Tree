@@ -1,10 +1,12 @@
 addLayer("a", {
     name: "achievement",
     symbol: "A",
-    startData() { return {
-        unlocked: true,
-        points: new Decimal(0),
-    }},
+    startData() {
+        return {
+            unlocked: true,
+            points: new Decimal(0),
+        }
+    },
     color: "#FFB200",
     resource: "Achievements",
     type: "none",
@@ -19,12 +21,12 @@ addLayer("a", {
         12: {
             name: "Big Jump",
             tooltip: "Buy Inverse Booster",
-            done() { return hasUpgrade('p', 13)},
+            done() { return hasUpgrade('p', 13) },
         },
         13: {
             name: "Handful",
             tooltip: "Buy AAA Batteries",
-            done() { return hasUpgrade('p', 22)}, 
+            done() { return hasUpgrade('p', 22) },
         },
         14: {
             name: "Layer #2",
@@ -34,67 +36,72 @@ addLayer("a", {
         15: {
             name: "Dilemma?",
             tooltip: "Buy the Direct Hit. Reward: 10% more Prestige Points",
-            done() { return hasUpgrade('r', 13)},
+            done() { return hasUpgrade('r', 13) },
         },
         16: {
             name: "Inflation?",
             tooltip: "Reach 750 Prestige points",
-            done() { return player.p.points.gte(750)}
+            done() { return player.p.points.gte(750) }
         },
         21: {
             name: "Not Stonks",
             tooltip: "Buy Acutal Dilemma",
-            done() {return hasUpgrade('p', 24)}
+            done() { return hasUpgrade('p', 24) }
         },
         22: {
             name: "Prolouge",
             tooltip: "Complete Introduction",
-            done() {return hasChallenge('c', 11)}
+            done() { return hasChallenge('c', 11) }
         },
         23: {
             name: "Programming",
             tooltip: "Complete Initialize",
-            done() {return hasChallenge('c', 12)}
+            done() { return hasChallenge('c', 12) }
         },
         24: {
             name: "Problem?",
             tooltip: "Complete Interesting",
-            done() {return hasChallenge('c', 13)}
+            done() { return hasChallenge('c', 13) }
         },
         25: {
             name: "A Reset In The Poetic Sense",
             tooltip: "Buy New Game+",
-            done() {return hasUpgrade('r', 23)}
+            done() { return hasUpgrade('r', 23) }
         },
         26: {
             name: "But Why?",
             tooltip: "Buy a Weak Booster. Reward: +1% Rebirth Points",
-            done() {return hasUpgrade('p', 32)}
+            done() { return hasUpgrade('p', 32) }
         },
         31: {
             name: "Decently Big Numbers",
-            tooltip: "Reach 1e9 Points",
-            done() {return player.points.gte(1e9)}
+            tooltip: "Reach 10,000,000 Points",
+            done() { return player.points.gte(1e7) }
         },
         32: {
             name: "Going Down",
             tooltip: "Get Energy. Reward: +20% Prestige Points",
-            done() {return player.e.points.gte(1)}
+            done() { return player.e.points.gte(1) }
         },
         33: {
             name: "Making Progress",
             tooltip: "Get 3 Energy",
-            done() {return player.e.points.gte(3)}
+            done() { return player.e.points.gte(3) }
         },
         34: {
             name: "EUREKA!",
             tooltip: "Complete Idea. Reward: Unlock 3 More Energy Upgrades",
-            done() {return hasChallenge('c', 21)}
+            done() { return hasChallenge('c', 21) }
         },
         35: {
             name: "At The Speed Of Light",
             tooltip: "Buy Coulomb. Reward: +5% Rebirth Points",
-            done() {return hasUpgrade('e', 21)}
+            done() { return hasUpgrade('e', 21) }
+        },
+        36: {
+            name: "We have a test today",
+            tooltip: "Buy Construction",
+            done() { return hasUpgrade('c', 13) }
         }
     }
 })
@@ -103,23 +110,26 @@ addLayer("p", {
     name: "prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
-    startData() { return {
-        unlocked: true,
-		points: new Decimal(0),
-    }},
+    startData() {
+        return {
+            unlocked: true,
+            points: new Decimal(0),
+        }
+    },
     color: "#4BDC13",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
     resource: "prestige points", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
-    baseAmount() {return player.points}, // Get the current amount of baseResource
+    baseAmount() { return player.points }, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
+    softcap: new Decimal('1e6'),
     gainMult() { // Calculate the multiplier for main currency from bonuses
         let mult = new Decimal(1)
         if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
         if (hasUpgrade('p', 22)) mult = mult.times(1.5)
-        if (hasUpgrade('r', 11)) mult = mult.times(upgradeEffect('r', 11))   
-        if (hasUpgrade('r', 12)) mult = mult.times(1.25)     
+        if (hasUpgrade('r', 11)) mult = mult.times(upgradeEffect('r', 11))
+        if (hasUpgrade('r', 12)) mult = mult.times(1.25)
         if (hasAchievement('a', 15)) mult = mult.times(1.1)
         if (hasUpgrade('p', 23)) mult = mult.times(upgradeEffect('p', 23))
         if (hasUpgrade('p', 24)) mult = mult.times(0.8)
@@ -128,8 +138,8 @@ addLayer("p", {
         if (hasUpgrade('p', 34)) mult = mult.times(upgradeEffect('p', 34))
         if (hasAchievement('a', 32)) mult = mult.times(1.2)
         if (hasUpgrade('e', 22)) mult = mult.times(upgradeEffect('e', 22))
-        if (hasUpgrade('e', 12)) mult = mult.times(1.2)    
-        if (inChallenge('c', 12)) mult = mult.pow(0.5)    
+        if (hasUpgrade('e', 12)) mult = mult.times(1.2)
+        if (inChallenge('c', 12)) mult = mult.pow(0.5)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -137,9 +147,9 @@ addLayer("p", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        { key: "p", description: "P: Reset for prestige points", onPress() { if (canReset(this.layer)) doReset(this.layer) } },
     ],
-    layerShown(){return true},
+    layerShown() { return true },
     upgrades: {
         11: {
             title: "Make this whatever you want!",
@@ -153,7 +163,7 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.5)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
         },
         13: {
             title: "Inverse Booster",
@@ -162,12 +172,12 @@ addLayer("p", {
             effect() {
                 return player.points.add(1).pow(0.15)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
         },
         14: {
             title: "Recycling",
             description: "Double point gain again",
-            cost: new Decimal(50),    
+            cost: new Decimal(50),
             unlocked() {
                 return hasUpgrade('r', 21)
             }
@@ -177,9 +187,9 @@ addLayer("p", {
             description: "Boost point gain based on points",
             cost: new Decimal(10),
             effect() {
-                return player.points.add(1).pow(0.2)
+                return player.points.add(1).pow(0.1)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
         },
         22: {
             title: "AAA Batteries",
@@ -193,14 +203,14 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.01)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasUpgrade('r', 21)
             }
         },
         24: {
             title: "Actual Dilemma",
-            description: "20% more points but less prestige points",
+            description: "20% more points but 20% less prestige points",
             cost: new Decimal(1500),
             unlocked() {
                 return hasUpgrade('r', 21)
@@ -221,7 +231,7 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.1)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasChallenge('c', 11)
             }
@@ -233,7 +243,7 @@ addLayer("p", {
             effect() {
                 return player.points.add(1).pow(0.05)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasChallenge('c', 13)
             }
@@ -245,32 +255,50 @@ addLayer("p", {
             effect() {
                 return player.points.add(1).pow(0.03)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasChallenge('c', 13)
             }
         }
     },
+
+    doReset(resettingLayer) {
+        let keep = [];
+
+        if (hasMilestone('e', 0) && layers[resettingLayer].row === 2) {
+            keep.push(11, 12, 13);
+            layerDataReset(this.layer)
+            player[this.layer].upgrades = keep
+            return;
+        }
+
+
+        if (layers[resettingLayer].row > this.row) {
+            layerDataReset(this.layer, keep);
+        }
+    }
 })
 
 addLayer("r", {
-    startData() { return {                  // startData is a function that returns default data for a layer. 
-        unlocked: false,                     // You can add more variables here to add them to your layer.
-        points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
-    }},
+    startData() {
+        return {                  // startData is a function that returns default data for a layer. 
+            unlocked: false,                     // You can add more variables here to add them to your layer.
+            points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
+        }
+    },
 
     color: "#007cb0",                       // The color for this layer, which affects many elements.
     resource: "rebirth points",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
     hotkeys: [
-        {key: "r", description: "R: Reset for rebirth points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        { key: "r", description: "R: Reset for rebirth points", onPress() { if (canReset(this.layer)) doReset(this.layer) } },
     ],
 
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.p.points },  // A function to return the current amount of baseResource.
 
     requires: new Decimal(40),              // The amount of the base needed to  gain 1 of the prestige currency.
-                                            // Also the amount required to unlock the layer.
+    // Also the amount required to unlock the layer.
 
     type: "normal",                         // Determines the formula used for calculating prestige currency.
     exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
@@ -298,7 +326,7 @@ addLayer("r", {
             effect() {
                 return player[this.layer].points.add(2).pow(0.25)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
         },
         12: {
             title: "Twin Booster",
@@ -312,7 +340,7 @@ addLayer("r", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.6)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
         },
         21: {
             title: "Opening",
@@ -326,7 +354,7 @@ addLayer("r", {
             effect() {
                 return player.c.points.add(1).pow(0.5)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasChallenge('c', 12)
             }
@@ -338,7 +366,7 @@ addLayer("r", {
             effect() {
                 return player.c.points.add(1).pow(0.3)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasChallenge('c', 12)
             }
@@ -358,7 +386,7 @@ addLayer("r", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.005)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
             unlocked() {
                 return hasUpgrade('e', 12)
             }
@@ -375,20 +403,22 @@ addLayer("r", {
 })
 
 addLayer("c", {
-    startData() { return {                  // startData is a function that returns default data for a layer. 
-        unlocked: true,                     // You can add more variables here to add them to your layer.
-        points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
-    }},
+    startData() {
+        return {                  // startData is a function that returns default data for a layer. 
+            unlocked: true,                     // You can add more variables here to add them to your layer.
+            points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
+        }
+    },
 
     color: "#9B2321",                       // The color for this layer, which affects many elements.
-    resource: "challenge point",            // The name of this layer's main prestige resource.
+    resource: "challenge points",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
 
     baseResource: "points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.points },  // A function to return the current amount of baseResource.
 
-    requires: new Decimal(100000),              // The amount of the base needed to  gain 1 of the prestige currency.
-                                            // Also the amount required to unlock the layer.
+    requires: new Decimal(20000),              // The amount of the base needed to  gain 1 of the prestige currency.
+    // Also the amount required to unlock the layer.
 
     type: "static",                         // Determines the formula used for calculating prestige currency.
     exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
@@ -401,7 +431,7 @@ addLayer("c", {
     },
 
     layerShown() { return hasAchievement('a', 21) },          // Returns a bool for if this layer's node should be visible in the tree.
-    
+
     milestones: {
         0: {
             requirementDescription: "1 Challenge Point",
@@ -409,12 +439,12 @@ addLayer("c", {
             done() { return player.c.points.gte(1) }
         },
         1: {
-            requirementDescription: "3 Challenge Point",
+            requirementDescription: "3 Challenge Points",
             effectDescription: "Unlock the second Challenge",
             done() { return player.c.points.gte(3) }
         },
         2: {
-            requirementDescription: "5 Challenge Point",
+            requirementDescription: "5 Challenge Points",
             effectDescription: "Unlock the third Challenge",
             done() { return player.c.points.gte(5) }
         }
@@ -424,7 +454,7 @@ addLayer("c", {
         11: {
             name: "Introduction",
             challengeDescription: "Point gain is divided based on points",
-            canComplete: function() {return player.points.gte(100)},
+            canComplete: function () { return player.points.gte(100) },
             unlocked() {
                 return hasMilestone('c', 0)
             },
@@ -434,43 +464,91 @@ addLayer("c", {
         12: {
             name: "Initialize",
             challengeDescription: "Square root Point & Prestige Point Gain",
-            canComplete: function() {return player.points.gte(100)},
+            canComplete: function () { return player.points.gte(111) },
             unlocked() {
                 return hasMilestone('c', 1)
             },
             rewardDescription: "Unlock 2 more Rebirth Upgrades",
-            goalDescription: "100 Points"
+            goalDescription: "111 Points"
         },
         13: {
             name: "Interesting",
             challengeDescription: "Cube root Point Gain, but Double Prestige Point Gain",
-            canComplete: function() {return player.points.gte(100)},
+            canComplete: function () { return player.points.gte(125) },
             unlocked() {
                 return hasMilestone('c', 2)
             },
             rewardDescription: "Unlock 2 more Prestige Upgrades",
-            goalDescription: "100 Points"
+            goalDescription: "125 Points"
         },
         21: {
             name: "Idea",
             challengeDescription: "Introduction and Initialize simultaneously",
             countsAs: [11, 12],
-            canComplete: function() {return player.points.gte(100)},
+            canComplete: function () { return player.points.gte(1000) },
             unlocked() {
                 return hasUpgrade('r', 33)
             },
             rewardDescription: "50% More Rebirth Points"
-        }
+        },
+        22: {
+            name: "Interaction",
+            challengeDescription: "Introduction and Interesting simultaneously",
+            countsAs: [11, 12],
+            canComplete: function () { return player.points.gte(2000) },
+            unlocked() {
+                return hasUpgrade('c', 13)
+            },
+            rewardDescription: "Unlock a new Row 1 Layer"
+        },
+    },
+
+    upgrades: {
+        11: {
+            name: 'Cozy',
+            description: 'Energy boosts Challenge Point Gain',
+            cost: new Decimal(10),
+            unlocked() {
+                return hasUpgrade('e', 21)
+            },
+            effect() {
+                return player.e.points.add(1).pow(0.5)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
+        },
+        12: {
+            name: 'Crazy',
+            description: 'Rebirth Points boosts Challenge Point Gain',
+            cost: new Decimal(10),
+            unlocked() {
+                return hasUpgrade('e', 22)
+            },
+            effect() {
+                return player.r.points.add(1).pow(0.25)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
+        },
+        13: {
+            name: 'Construct',
+            description: 'Unlock a new Challenge',
+            cost: new Decimal(10),
+            unlocked() {
+                return hasUpgrade('e', 23)
+            },
+        },
+
     }
 })
 
 addLayer("e", {
-    startData() { return {                  // startData is a function that returns default data for a layer. 
-        unlocked: true,                     // You can add more variables here to add them to your layer.
-        points: new Decimal(0),
-        best: new Decimal(0),
-        total: new Decimal(0),            // "points" is the internal name for the main resource of the layer.
-    }},
+    startData() {
+        return {                  // startData is a function that returns default data for a layer. 
+            unlocked: true,                     // You can add more variables here to add them to your layer.
+            points: new Decimal(0),
+            best: new Decimal(0),
+            total: new Decimal(0),            // "points" is the internal name for the main resource of the layer.
+        }
+    },
 
     color: "#FFD700",                       // The color for this layer, which affects many elements.
     resource: "energy",            // The name of this layer's main prestige resource.
@@ -479,8 +557,8 @@ addLayer("e", {
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.p.points },  // A function to return the current amount of baseResource.
 
-    requires: new Decimal(1e8),              // The amount of the base needed to  gain 1 of the prestige currency.
-                                            // Also the amount required to unlock the layer.
+    requires: new Decimal(1e6),              // The amount of the base needed to  gain 1 of the prestige currency.
+    // Also the amount required to unlock the layer.
 
     type: "static",                         // Determines the formula used for calculating prestige currency.
     exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
@@ -494,54 +572,62 @@ addLayer("e", {
 
     layerShown() { return hasAchievement('a', 31) },          // Returns a bool for if this layer's node should be visible in the tree.
 
-        upgrades: {
-            11: {
-                title: "Volt",
-                description: "Double Point Gain and Unlock a Rebirth Upgrade",
-                cost: new Decimal(1),
+    milestones: {
+        0: {
+            requirementDescription: "1 Total Energy",
+            effectDescription: "Keep the first 3 Prestige Upgrades on Row 2 Resets (Doesn't Work Yet)",
+            done() { return player.e.total.gte(1) },
+        },
+    },
+
+    upgrades: {
+        11: {
+            title: "Volt",
+            description: "Double Point Gain and Unlock a Rebirth Upgrade",
+            cost: new Decimal(1),
+        },
+        12: {
+            title: "Ampere",
+            description: "+50% Prestige Points and Unlock a Rebirth Upgrade",
+            cost: new Decimal(2),
+        },
+        13: {
+            title: "Watt",
+            description: "+20% Rebirth Points and Unlock a Rebirth Upgrade",
+            cost: new Decimal(3),
+        },
+        21: {
+            title: "Coulomb",
+            description: "Boost Point Gain based on Total Energy and Unlock a Challenge Upgrade",
+            cost: new Decimal(4),
+            unlocked() {
+                return hasAchievement('a', 34)
             },
-            12: {
-                title: "Ampere",
-                description: "+50% Prestige Points and Unlock a Rebirth Upgrade",
-                cost: new Decimal(2),
+            effect() {
+                return player[this.layer].total.add(1).pow(0.5)
             },
-            13: {
-                title: "Watt",
-                description: "+20% Rebirth Points and Unlock a Rebirth Upgrade",
-                cost: new Decimal(3),
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
+        },
+        22: {
+            title: "Franklin",
+            description: "Boost Prestige Point Gain based on Best Energy and Unlock a Challenge Upgrade",
+            cost: new Decimal(5),
+            unlocked() {
+                return hasAchievement('a', 34)
             },
-            21: {
-                title: "Coulomb",
-                description: "Boost Point Gain based on Total Energy and Unlock a Challenge Upgrade",
-                cost: new Decimal(4),
-                unlocked() {
-                    return hasAchievement('a', 34)
-                },
-                effect() {
-                    return player[this.layer].total.add(1).pow(0.5)
-                },
-                effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effect() {
+                return player[this.layer].best.add(1).pow(1 / 3)
             },
-            22: {
-                title: "Franklin",
-                description: "Boost Prestige Point Gain based on Best Energy and Unlock a Challenge Upgrade",
-                cost: new Decimal(5),
-                unlocked() {
-                    return hasAchievement('a', 34)
-                },
-                effect() {
-                    return player[this.layer].best.add(1).pow(1/3)
-                },
-                effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
+        },
+        23: {
+            title: "Biot",
+            description: "Triple Point Gain and Unlock a Challenge Upgrade",
+            cost: new Decimal(6),
+            unlocked() {
+                return hasAchievement('a', 34)
             },
-            23: {
-                title: "Biot",
-                description: "... and Unlock a Challenge Upgrade",
-                cost: new Decimal(6),
-                unlocked() {
-                    return hasAchievement('a', 34)
-                },
-            },
-            
+        },
+
     },
 })
