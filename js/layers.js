@@ -296,7 +296,7 @@ addLayer("r", {
             description: "Rebirth points boost prestige points",
             cost: new Decimal(1),
             effect() {
-                return player[this.layer].points.add(1).pow(0.25)
+                return player[this.layer].points.add(2).pow(0.25)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
         },
