@@ -124,6 +124,12 @@ addLayer("p", {
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
     softcap: new Decimal('1e6'),
+    passiveGeneration() {
+        if (hasMilestone("e", 4)) {
+            return 0.01;
+        }
+        return 0;
+    },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         let mult = new Decimal(1)
         if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
@@ -139,11 +145,12 @@ addLayer("p", {
         if (hasAchievement('a', 32)) mult = mult.times(1.2)
         if (hasUpgrade('e', 22)) mult = mult.times(upgradeEffect('e', 22))
         if (hasUpgrade('e', 12)) mult = mult.times(1.2)
-        if (inChallenge('c', 12)) mult = mult.pow(0.5)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
-        return new Decimal(1)
+        let exp = new Decimal(1)
+        if (inChallenge('c', 12)) exp = exp.times(0.5)
+        return exp
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
@@ -263,19 +270,22 @@ addLayer("p", {
     },
 
     doReset(resettingLayer) {
-        let keep = [];
 
-        if (hasMilestone('e', 0) && layers[resettingLayer].row === 2) {
-            keep.push(11, 12, 13);
-            layerDataReset(this.layer)
-            player[this.layer].upgrades = keep
-            return;
+        let targetRow = layers[resettingLayer].row;
+
+        if (targetRow <= layers[this.layer].row) return;
+
+        let keepUpgrades = [];
+
+        if ((targetRow === 1 && hasMilestone("e", 0)) || (targetRow === 2 && hasMilestone("e", 1))) {
+            if (hasUpgrade(this.layer, 11)) keepUpgrades.push(11);
+            if (hasUpgrade(this.layer, 12)) keepUpgrades.push(12);
+            if (hasUpgrade(this.layer, 13)) keepUpgrades.push(13);
         }
 
+        layerDataReset(this.layer);
 
-        if (layers[resettingLayer].row > this.row) {
-            layerDataReset(this.layer, keep);
-        }
+        player[this.layer].upgrades = keepUpgrades;
     }
 })
 
@@ -302,6 +312,8 @@ addLayer("r", {
 
     type: "normal",                         // Determines the formula used for calculating prestige currency.
     exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
+
+    softcap: new Decimal(1000),
 
     gainMult() {                            // Returns your multiplier to your gain of the prestige resource.
         let mult = new Decimal(1)
@@ -400,6 +412,24 @@ addLayer("r", {
             }
         }
     },
+
+    doReset(resettingLayer) {
+
+        let targetRow = layers[resettingLayer].row;
+
+        if (targetRow <= layers[this.layer].row) return;
+
+        let keepUpgrades = [];
+
+        if ((targetRow === 2 && hasMilestone("e", 2))) {
+            if (hasUpgrade(this.layer, 11)) keepUpgrades.push(11);
+            if (hasUpgrade(this.layer, 12)) keepUpgrades.push(12);
+        }
+
+        layerDataReset(this.layer);
+
+        player[this.layer].upgrades = keepUpgrades;
+    }
 })
 
 addLayer("c", {
@@ -423,11 +453,17 @@ addLayer("c", {
     type: "static",                         // Determines the formula used for calculating prestige currency.
     exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
 
+
     gainMult() {                            // Returns your multiplier to your gain of the prestige resource.
-        return new Decimal(1)               // Factor in any bonuses multiplying gain here.
+        let mult = new Decimal(1)
+        return mult              // Factor in any bonuses multiplying gain here.
     },
-    gainExp() {                             // Returns the exponent to your gain of the prestige resource.
-        return new Decimal(1)
+    gainExp() { 
+        let exp = new Decimal(1)                            // Returns the exponent to your gain of the prestige resource.
+        
+        if (player[this.layer].points >= 5) exp = exp.times(0.5)
+        
+        return exp
     },
 
     layerShown() { return hasAchievement('a', 21) },          // Returns a bool for if this layer's node should be visible in the tree.
@@ -485,7 +521,7 @@ addLayer("c", {
             name: "Idea",
             challengeDescription: "Introduction and Initialize simultaneously",
             countsAs: [11, 12],
-            canComplete: function () { return player.points.gte(1000) },
+            canComplete: function () { return player.points.gte(250) },
             unlocked() {
                 return hasUpgrade('r', 33)
             },
@@ -495,7 +531,7 @@ addLayer("c", {
             name: "Interaction",
             challengeDescription: "Introduction and Interesting simultaneously",
             countsAs: [11, 12],
-            canComplete: function () { return player.points.gte(2000) },
+            canComplete: function () { return player.points.gte(500) },
             unlocked() {
                 return hasUpgrade('c', 13)
             },
@@ -537,6 +573,27 @@ addLayer("c", {
             },
         },
 
+    },
+
+    doReset(resettingLayer) {
+
+        let targetRow = layers[resettingLayer].row;
+
+        if (targetRow <= layers[this.layer].row) return;
+
+        let keepChallenges = [];
+
+        if ((targetRow === 2 && hasMilestone("e", 3))) {
+            if (hasUpgrade(this.layer, 11)) keepChallenges.push(11);
+            if (hasUpgrade(this.layer, 12)) keepChallenges.push(12);
+            if (hasUpgrade(this.layer, 13)) keepChallenges.push(13);
+        }
+
+        layerDataReset(this.layer);
+
+        for (let id of keepChallenges) {
+            player[this.layer].challenges[id] = 1;
+        }
     }
 })
 
@@ -552,7 +609,7 @@ addLayer("e", {
 
     color: "#FFD700",                       // The color for this layer, which affects many elements.
     resource: "energy",            // The name of this layer's main prestige resource.
-    row: 3,                                 // The row this layer is on (0 is the first row).
+    row: 2,                                 // The row this layer is on (0 is the first row).
 
     baseResource: "prestige points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.p.points },  // A function to return the current amount of baseResource.
@@ -575,8 +632,28 @@ addLayer("e", {
     milestones: {
         0: {
             requirementDescription: "1 Total Energy",
-            effectDescription: "Keep the first 3 Prestige Upgrades on Row 2 Resets (Doesn't Work Yet)",
+            effectDescription: "Keep the first 3 Prestige Upgrades on Row 2 Resets",
             done() { return player.e.total.gte(1) },
+        },
+        1: {
+            requirementDescription: "2 Total Energy",
+            effectDescription: "Also Keep them on Row 3 Resets",
+            done() { return player.e.total.gte(2) },
+        },
+        2: {
+            requirementDescription: "3 Total Energy",
+            effectDescription: "Keep the first 2 Rebirth Upgrades on Row 3 Resets",
+            done() { return player.e.total.gte(3) },
+        },
+        3: {
+            requirementDescription: "4 Total Energy",
+            effectDescription: "Keep the first 3 Challenge Completions on Row 3 Resets",
+            done() { return player.e.total.gte(4) },
+        },
+        4: {
+            requirementDescription: "5 Total Energy",
+            effectDescription: "Gain 1% of your Prestige Points on Reset every Second",
+            done() { return player.e.total.gte(5) },
         },
     },
 
